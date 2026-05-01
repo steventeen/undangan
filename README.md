@@ -1,67 +1,48 @@
 # Undangan Online Platform
 
-Platform pembuatan undangan pernikahan online berbasis web yang elegan, responsif, dan mudah digunakan.
+Platform pembuatan undangan digital multi-kategori (Wedding, Birthday, Seminar, Graduation, Gathering) yang elegan, responsif, dan dinamis.
 
-## Fitur Utama
+## ✨ Fitur Utama Baru
 
-- **Pilihan Template**: Berbagai kategori (Classic, Modern, Rustic, Premium).
-- **Preview Real-time**: Pengguna dapat melihat perubahan desain secara langsung saat mengisi data.
-- **Sistem Checkout**: Pembayaran via transfer bank dengan upload bukti pembayaran.
-- **Admin Panel**: Dashboard statistik, manajemen pesanan, dan editor template HTML/CSS.
-- **WhatsApp Share**: Integrasi tombol bagikan ke WhatsApp untuk setiap undangan.
+- **Multi-Kategori**: Tidak hanya pernikahan, sekarang mendukung berbagai jenis acara.
+- **Form Dinamis**: Form pengisian data otomatis menyesuaikan dengan konsep template yang dipilih.
+- **20+ Template Premium**: Berbagai pilihan desain mulai dari minimalis hingga mewah.
+- **Real-time Editor**: Preview langsung perubahan data pada desain undangan.
+- **Admin Panel**: Manajemen pesanan dan kustomisasi template penuh.
 
-## Tech Stack
+## 🛠️ Langkah Penting: Update Database
 
-- **Framework**: Next.js 15 (App Router)
-- **Database & Auth**: Supabase
-- **Styling**: Tailwind CSS
-- **Components**: Lucide React, Recharts
-- **Security**: DOMPurify, Middleware Protection
+Karena adanya fitur **Form Dinamis**, Anda wajib menambahkan kolom `fields_config` ke tabel `templates`. 
 
-## Cara Setup Lokal
+1. Buka **SQL Editor** di Supabase Dashboard.
+2. Jalankan perintah berikut:
+```sql
+ALTER TABLE public.templates ADD COLUMN IF NOT EXISTS fields_config JSONB NOT NULL DEFAULT '[]';
+```
+3. (Opsional) Jika ingin mereset total, jalankan seluruh isi file `supabase/migrations/init.sql`.
 
-1. **Clone Repository**
-   ```bash
-   git clone <repository-url>
-   cd undangan
-   ```
+## 🚀 Cara Setup Lokal
 
-2. **Install Dependencies**
+1. **Install Dependencies**
    ```bash
    npm install
    ```
 
-3. **Konfigurasi Supabase**
-   - Buat proyek baru di [Supabase Console](https://app.supabase.com).
-   - Jalankan SQL yang ada di `supabase/migrations/init.sql` pada menu **SQL Editor**.
-   - Pastikan bucket `templates`, `payment_proofs`, dan `invitations` telah dibuat (otomatis oleh script SQL).
+2. **Environment Variables**
+   Isi `.env.local` dengan API Key Supabase Anda.
 
-4. **Environment Variables**
-   - Copy `.env.local.example` menjadi `.env.local`.
-   - Isi `NEXT_PUBLIC_SUPABASE_URL` dan `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
-   - Isi `SUPABASE_SERVICE_ROLE_KEY` (untuk operasi server-side).
-
-5. **Populasi Data Awal**
+3. **Populasi 20+ Template**
    ```bash
    npm run db:setup
    ```
 
-6. **Jalankan Aplikasi**
+4. **Jalankan**
    ```bash
    npm run dev
    ```
 
-## Deploy ke Vercel
+## 🌐 Live Demo
+[https://undangan-spesial.vercel.app/](https://undangan-spesial.vercel.app/)
 
-1. Hubungkan repository GitHub ke Vercel.
-2. Tambahkan semua Environment Variables dari `.env.local` ke pengaturan Vercel.
-3. Klik **Deploy**.
-
-## Akun Admin Default
-
-- **Email**: `admin@undangan.com`
-- **Password**: `admin123`
-
-## Lisensi
-
-MIT
+---
+Developed with ❤️ using Next.js 15 & Supabase.
