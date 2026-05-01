@@ -13,7 +13,11 @@ export async function POST(request: Request) {
     const supabase = getServiceSupabase();
     
     const orderNumber = generateOrderNumber();
-    const uniqueSlug = generateUniqueSlug(eventData.groom_name, eventData.bride_name);
+    const slugBase = eventData.groom_name 
+      ? `${eventData.groom_name}-${eventData.bride_name}`
+      : (eventData.child_name || eventData.event_title || eventData.student_name || 'event');
+    
+    const uniqueSlug = generateUniqueSlug(slugBase);
 
     const { data, error } = await supabase
       .from('orders')
