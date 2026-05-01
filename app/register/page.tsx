@@ -148,7 +148,7 @@ export default function RegisterPage() {
             <Link href="/login" className="text-rose-500 font-semibold hover:underline">Masuk</Link>
           </p>
           <p className="text-center text-xs text-gray-400 mt-3">
-            Dengan mendaftar, kamu setuju dengan <Link href="#" className="underline">Syarat & Ketentuan</Link> kami.
+            Dengan mendaftar, kamu setuju dengan <Link href="/terms" className="underline">Syarat & Ketentuan</Link> kami.
           </p>
         </div>
       </div>

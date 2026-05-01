@@ -119,7 +119,7 @@ function LoginForm() {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="label mb-0">Password</label>
-                <Link href="#" className="text-xs text-rose-500 hover:underline">
+                <Link href="/forgot-password" className="text-xs text-rose-500 hover:underline">
                   Lupa password?
                 </Link>
               </div>
