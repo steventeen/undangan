@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Undangan Online Platform
 
-## Getting Started
+Platform pembuatan undangan pernikahan online berbasis web yang elegan, responsif, dan mudah digunakan.
 
-First, run the development server:
+## Fitur Utama
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Pilihan Template**: Berbagai kategori (Classic, Modern, Rustic, Premium).
+- **Preview Real-time**: Pengguna dapat melihat perubahan desain secara langsung saat mengisi data.
+- **Sistem Checkout**: Pembayaran via transfer bank dengan upload bukti pembayaran.
+- **Admin Panel**: Dashboard statistik, manajemen pesanan, dan editor template HTML/CSS.
+- **WhatsApp Share**: Integrasi tombol bagikan ke WhatsApp untuk setiap undangan.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Tech Stack
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Framework**: Next.js 15 (App Router)
+- **Database & Auth**: Supabase
+- **Styling**: Tailwind CSS
+- **Components**: Lucide React, Recharts
+- **Security**: DOMPurify, Middleware Protection
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Cara Setup Lokal
 
-## Learn More
+1. **Clone Repository**
+   ```bash
+   git clone <repository-url>
+   cd undangan
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Install Dependencies**
+   ```bash
+   npm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Konfigurasi Supabase**
+   - Buat proyek baru di [Supabase Console](https://app.supabase.com).
+   - Jalankan SQL yang ada di `supabase/migrations/init.sql` pada menu **SQL Editor**.
+   - Pastikan bucket `templates`, `payment_proofs`, dan `invitations` telah dibuat (otomatis oleh script SQL).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. **Environment Variables**
+   - Copy `.env.local.example` menjadi `.env.local`.
+   - Isi `NEXT_PUBLIC_SUPABASE_URL` dan `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+   - Isi `SUPABASE_SERVICE_ROLE_KEY` (untuk operasi server-side).
 
-## Deploy on Vercel
+5. **Populasi Data Awal**
+   ```bash
+   npm run db:setup
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+6. **Jalankan Aplikasi**
+   ```bash
+   npm run dev
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deploy ke Vercel
+
+1. Hubungkan repository GitHub ke Vercel.
+2. Tambahkan semua Environment Variables dari `.env.local` ke pengaturan Vercel.
+3. Klik **Deploy**.
+
+## Akun Admin Default
+
+- **Email**: `admin@undangan.com`
+- **Password**: `admin123`
+
+## Lisensi
+
+MIT
