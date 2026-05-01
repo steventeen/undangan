@@ -1,40 +1,59 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
+import { NextRequest, NextResponse } from 'next/server';
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
+  let supabaseResponse = NextResponse.next({ request });
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          );
+          supabaseResponse = NextResponse.next({ request });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            supabaseResponse.cookies.set(name, value, options)
+          );
+        },
+      },
+    }
+  );
+
+  const { data: { user } } = await supabase.auth.getUser();
   const { pathname } = request.nextUrl;
 
-  // Protect /admin routes
-  if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
-    // Middleware can only read cookies, not localStorage
-    // Ensure that your login page sets this cookie:
-    // document.cookie = "admin_session=true; path=/";
-    const session = request.cookies.get('admin_session');
+  // Protected routes: /dashboard and /builder
+  const isProtected =
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/builder');
 
-    if (!session || session.value !== 'true') {
-      const url = request.nextUrl.clone();
-      url.pathname = '/admin/login';
-      return NextResponse.redirect(url);
-    }
+  // Auth routes: redirect if already logged in
+  const isAuthRoute =
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/register');
+
+  if (isProtected && !user) {
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = '/login';
+    redirectUrl.searchParams.set('redirect', pathname);
+    return NextResponse.redirect(redirectUrl);
   }
 
-  // Also protect API routes under /api/admin
-  if (pathname.startsWith('/api/admin')) {
-    const session = request.cookies.get('admin_session');
-    
-    // For API routes, if we want to be strict, we check the cookie or a custom Authorization header
-    // Since we are using standard fetch from the client for admin actions, the cookie is sent automatically.
-    if (!session || session.value !== 'true') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+  if (isAuthRoute && user) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
-  return NextResponse.next();
+  return supabaseResponse;
 }
 
 export const config = {
   matcher: [
-    '/admin/:path*',
-    '/api/admin/:path*'
+    '/((?!_next/static|_next/image|favicon.ico|i/|api/).*)',
   ],
 };

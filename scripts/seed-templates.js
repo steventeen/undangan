@@ -1,4 +1,20 @@
-export const DEFAULT_TEMPLATES = [
+const { createClient } = require('@supabase/supabase-js');
+const fs = require('fs');
+const path = require('path');
+require('dotenv').config({ path: '.env.local' });
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Missing Supabase env vars in .env.local');
+  process.exit(1);
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+// We'll read the array from the compiled TS file or just redefine it here to avoid TS config issues in the script
+const templates = [
   {
     name: 'Elegance Rose',
     category: 'wedding',
@@ -126,3 +142,19 @@ export const DEFAULT_TEMPLATES = [
     }
   }
 ];
+
+async function seed() {
+  console.log('Clearing existing templates...');
+  await supabase.from('templates').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+  
+  console.log(`Seeding ${templates.length} templates...`);
+  const { data, error } = await supabase.from('templates').insert(templates).select();
+  
+  if (error) {
+    console.error('Seed error:', error);
+  } else {
+    console.log('Seed successful! Added templates:', data.length);
+  }
+}
+
+seed();
