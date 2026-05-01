@@ -7,6 +7,12 @@ export interface Template {
   css_custom: string | null;
   price: number;
   is_active: boolean;
+  fields_config: {
+    name: string;
+    label: string;
+    type: 'text' | 'date' | 'url' | 'textarea' | 'number';
+    placeholder?: string;
+  }[];
   created_at: string;
 }
 

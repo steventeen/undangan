@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS public.templates (
     html_template TEXT NOT NULL,
     css_custom TEXT,
     is_active BOOLEAN DEFAULT true,
+    fields_config JSONB NOT NULL DEFAULT '[]', -- Configuration for dynamic form fields
     created_at TIMESTAMPTZ DEFAULT now()
 );
 

@@ -25,16 +25,7 @@ export default function TemplateDetail({ params }: { params: Promise<{ id: strin
   const [template, setTemplate] = useState<Template | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const [eventData, setEventData] = useState<EventData>({
-    groom_name: '',
-    bride_name: '',
-    event_date: '',
-    event_time: '',
-    venue: '',
-    maps_link: '',
-    story: '',
-    whatsapp_number: '',
-  });
+  const [eventData, setEventData] = useState<Record<string, any>>({});
 
   const debouncedEventData = useDebounce(eventData, 300);
 
@@ -45,23 +36,41 @@ export default function TemplateDetail({ params }: { params: Promise<{ id: strin
         .select('*')
         .eq('id', id)
         .single();
-      if (data) setTemplate(data);
+      
+      if (data) {
+        setTemplate(data);
+        // Initialize eventData with keys from fields_config
+        const initialData: Record<string, any> = {};
+        (data.fields_config || []).forEach((field: any) => {
+          initialData[field.name] = '';
+        });
+        
+        // Load from draft if exists
+        const draft = localStorage.getItem('undangan_draft');
+        if (draft) {
+          try {
+            const parsed = JSON.parse(draft);
+            if (parsed.templateId === id) {
+              setEventData({ ...initialData, ...parsed.eventData });
+            } else {
+              setEventData(initialData);
+            }
+          } catch {
+            setEventData(initialData);
+          }
+        } else {
+          setEventData(initialData);
+        }
+      }
       setLoading(false);
     }
     fetchTemplate();
-
-    const draft = localStorage.getItem('undangan_draft');
-    if (draft) {
-      try {
-        const parsed = JSON.parse(draft);
-        if (parsed.templateId === id) setEventData(parsed.eventData);
-      } catch {}
-    }
   }, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setEventData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
+// ... (rest of logic remains similar, but form rendering changes)
 
   const saveDraft = () => {
     localStorage.setItem('undangan_draft', JSON.stringify({ templateId: id, eventData, template }));
@@ -102,44 +111,32 @@ export default function TemplateDetail({ params }: { params: Promise<{ id: strin
           </div>
 
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
-            <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Data Mempelai & Acara</h2>
+            <h2 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Data Acara</h2>
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Pria</label>
-                  <input type="text" name="groom_name" value={eventData.groom_name} onChange={handleChange} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-transparent text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Budi" />
+              {(template.fields_config || []).map((field) => (
+                <div key={field.name}>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{field.label}</label>
+                  {field.type === 'textarea' ? (
+                    <textarea
+                      name={field.name}
+                      value={eventData[field.name] || ''}
+                      onChange={handleChange}
+                      rows={3}
+                      className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-transparent text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                      placeholder={field.placeholder}
+                    />
+                  ) : (
+                    <input
+                      type={field.type}
+                      name={field.name}
+                      value={eventData[field.name] || ''}
+                      onChange={handleChange}
+                      className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-transparent text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                      placeholder={field.placeholder}
+                    />
+                  )}
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nama Wanita</label>
-                  <input type="text" name="bride_name" value={eventData.bride_name} onChange={handleChange} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-transparent text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Sari" />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tanggal</label>
-                  <input type="date" name="event_date" value={eventData.event_date} onChange={handleChange} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-transparent text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Waktu</label>
-                  <input type="text" name="event_time" value={eventData.event_time} onChange={handleChange} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-transparent text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="10:00 - Selesai" />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tempat Acara</label>
-                <input type="text" name="venue" value={eventData.venue} onChange={handleChange} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-transparent text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Gedung Serbaguna..." />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Link Google Maps</label>
-                <input type="url" name="maps_link" value={eventData.maps_link} onChange={handleChange} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-transparent text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="https://goo.gl/maps/..." />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nomor WhatsApp</label>
-                <input type="text" name="whatsapp_number" value={eventData.whatsapp_number} onChange={handleChange} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-transparent text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="628123456789" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Kisah/Pesan (Opsional)</label>
-                <textarea name="story" value={eventData.story} onChange={handleChange} rows={3} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-transparent text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Kisah cinta kami..."></textarea>
-              </div>
+              ))}
             </div>
 
             <div className="flex flex-col gap-3 mt-8">
