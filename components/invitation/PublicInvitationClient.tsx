@@ -302,7 +302,7 @@ function Guestbook({ invitationId, guestName, primaryColor }: { invitationId: st
       .eq('invitation_id', invitationId)
       .order('created_at', { ascending: false })
       .limit(20)
-      .then(({ data }) => { if (data) setMessages(data) });
+      .then((res: any) => { if (res.data) setMessages(res.data) });
 
     // Subscribe to realtime
     const channel = supabase.channel('realtime_guestbook')
@@ -311,7 +311,7 @@ function Guestbook({ invitationId, guestName, primaryColor }: { invitationId: st
         schema: 'public',
         table: 'guestbook',
         filter: `invitation_id=eq.${invitationId}`
-      }, (payload) => {
+      }, (payload: any) => {
         setMessages(prev => [payload.new, ...prev]);
       })
       .subscribe();

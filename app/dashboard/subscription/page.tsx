@@ -14,7 +14,7 @@ export default async function SubscriptionPage() {
     .single();
 
   const currentPlan = profile?.plan || 'free';
-  const limits = PLAN_LIMITS[currentPlan];
+  const limits = PLAN_LIMITS[currentPlan as 'free' | 'pro' | 'premium'];
 
   const plans = [
     {
