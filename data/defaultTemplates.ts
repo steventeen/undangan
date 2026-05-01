@@ -219,5 +219,249 @@ export const defaultTemplates = [
   display: block; background: #d4af37; color: #000; padding: 15px; text-decoration: none; font-weight: bold;
 }
 `
+  },
+  {
+    name: 'Premium Earthy Split',
+    category: 'premium',
+    price: 300000,
+    thumbnail_url: 'https://images.unsplash.com/photo-1510076857177-7470076d4098?q=80&w=800&auto=format&fit=crop',
+    html_template: `
+<div class="premium-earthy-container">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600&family=Montserrat:wght@300;400&family=Mrs+Saint+Delafield&display=swap" rel="stylesheet">
+  
+  <div class="split-layout">
+    <!-- Left Sidebar (Fixed on Desktop) -->
+    <div class="sidebar">
+      <div class="sidebar-content">
+        <p class="the-wedding">The Wedding of</p>
+        <h1 class="main-names">{{groom_name}} <br>& {{bride_name}}</h1>
+        <div class="scroll-indicator">
+          <span>SCROLL</span>
+          <div class="mouse"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Content (Scrollable) -->
+    <div class="main-content">
+      <section class="hero-section">
+        <div class="hero-image-wrap">
+          <img src="https://images.unsplash.com/photo-1510076857177-7470076d4098?q=80&w=800&auto=format&fit=crop" alt="Hero" />
+        </div>
+      </section>
+
+      <section class="quote-section">
+        <p class="script-text">God makes everything beautiful in its time.</p>
+        <p class="body-text">Ecclesiastes 3:11</p>
+      </section>
+
+      <section class="event-section">
+        <div class="event-card">
+          <div class="sideways-label">PEMBERKATAN</div>
+          <div class="event-details">
+            <h3>Holy Matrimony</h3>
+            <p class="date">{{event_date}}</p>
+            <p class="time">{{event_time}}</p>
+            <p class="venue">{{venue}}</p>
+            <a href="{{maps_link}}" class="btn-earth">OPEN MAPS</a>
+          </div>
+        </div>
+        
+        <div class="event-card">
+          <div class="sideways-label">RESEPSI</div>
+          <div class="event-details">
+            <h3>Wedding Reception</h3>
+            <p class="date">{{event_date}}</p>
+            <p class="time">18:00 - End</p>
+            <p class="venue">{{venue}}</p>
+            <a href="{{maps_link}}" class="btn-earth">OPEN MAPS</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="story-section">
+        <h2 class="section-title">Our Story</h2>
+        <p class="story-text">{{story}}</p>
+      </section>
+    </div>
+  </div>
+
+  <div class="floating-music">
+    <div class="music-icon">♪</div>
+  </div>
+</div>`,
+    css_custom: `
+:root {
+  --earth-dark: #5C5747;
+  --earth-light: #EDE7DA;
+  --earth-accent: #AEA288;
+}
+
+.premium-earthy-container {
+  background-color: var(--earth-light);
+  color: var(--earth-dark);
+  font-family: 'Montserrat', sans-serif;
+  min-height: 100vh;
+}
+
+.split-layout {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 1024px) {
+  .split-layout { flex-direction: row; }
+  .sidebar {
+    width: 45%;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+    top: 0;
+    background-color: var(--earth-dark);
+    color: var(--earth-light);
+    display: flex;
+    align-items: flex-end;
+    padding: 60px;
+    z-index: 10;
+  }
+  .main-content {
+    width: 55%;
+    margin-left: 45%;
+    padding: 0;
+  }
+}
+
+.sidebar {
+  background-color: var(--earth-dark);
+  color: var(--earth-light);
+  padding: 60px 40px;
+  text-align: left;
+}
+
+.the-wedding {
+  font-family: 'Mrs+Saint+Delafield', cursive;
+  font-size: 2rem;
+  margin-bottom: 10px;
+  opacity: 0.8;
+}
+
+.main-names {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 4rem;
+  line-height: 1;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.scroll-indicator {
+  margin-top: 40px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 0.7rem;
+  letter-spacing: 3px;
+}
+
+.mouse {
+  width: 20px;
+  height: 35px;
+  border: 1px solid var(--earth-light);
+  border-radius: 10px;
+}
+
+.hero-image-wrap img {
+  width: 100%;
+  height: 100vh;
+  object-fit: cover;
+}
+
+.quote-section {
+  padding: 100px 40px;
+  text-align: center;
+}
+
+.script-text {
+  font-family: 'Mrs+Saint+Delafield', cursive;
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.event-section {
+  padding: 0 40px 100px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.event-card {
+  display: flex;
+  background: white;
+  border-radius: 40px 0 40px 0;
+  overflow: hidden;
+  box-shadow: 10px 10px 30px rgba(0,0,0,0.05);
+}
+
+.sideways-label {
+  background-color: var(--earth-accent);
+  color: white;
+  padding: 20px 10px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-size: 0.7rem;
+  letter-spacing: 4px;
+  font-weight: 600;
+}
+
+.event-details {
+  padding: 40px;
+  flex: 1;
+}
+
+.event-details h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.btn-earth {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 30px;
+  background: var(--earth-dark);
+  color: white;
+  text-decoration: none;
+  border-radius: 30px;
+  font-size: 0.8rem;
+  letter-spacing: 2px;
+}
+
+.story-section {
+  padding: 80px 40px;
+  background-color: #f4f1ea;
+}
+
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.floating-music {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  z-index: 100;
+  cursor: pointer;
+}
+`
   }
 ];
