@@ -79,7 +79,7 @@ async function handleTransactionStatus(orderId: string, status: string) {
         free: { invitations: 1, ai_credits: 0 },
         pro: { invitations: 10, ai_credits: 5 },
         premium: { invitations: -1, ai_credits: 20 },
-      }[plan];
+      }[plan as 'free' | 'pro' | 'premium'];
 
       const expiresAt = new Date();
       expiresAt.setMonth(expiresAt.getMonth() + 1); // 1 month subscription
