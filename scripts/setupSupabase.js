@@ -117,11 +117,16 @@ const defaultTemplates = [
 async function setup() {
   console.log('--- Starting Supabase Setup ---');
 
-  // 1. Insert Templates
-  console.log('Inserting default templates...');
+  // 1. Clear existing templates to avoid conflicts if UNIQUE is not set
+  console.log('Cleaning up existing default templates...');
+  const templateNames = defaultTemplates.map(t => t.name);
+  await supabase.from('templates').delete().in('name', templateNames);
+
+  // 2. Insert Templates
+  console.log('Inserting fresh templates with images...');
   const { data: templates, error: tError } = await supabase
     .from('templates')
-    .upsert(defaultTemplates, { onConflict: 'name' })
+    .insert(defaultTemplates)
     .select();
 
   if (tError) {
@@ -130,7 +135,7 @@ async function setup() {
     console.log(`Successfully inserted ${templates.length} templates.`);
   }
 
-  // 2. Insert Sample Order (Optional)
+  // 3. Insert Sample Order (Optional)
   if (templates && templates.length > 0) {
     console.log('Inserting sample order...');
     const sampleOrder = {
@@ -153,9 +158,12 @@ async function setup() {
       unique_slug: 'john-jane-wedding-sample'
     };
 
+    // Clean up sample order if exists
+    await supabase.from('orders').delete().eq('order_number', sampleOrder.order_number);
+
     const { error: oError } = await supabase
       .from('orders')
-      .upsert(sampleOrder, { onConflict: 'order_number' });
+      .insert(sampleOrder);
 
     if (oError) {
       console.error('Error inserting sample order:', oError);

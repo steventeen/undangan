@@ -1,7 +1,7 @@
 -- Initialize Tables
 CREATE TABLE IF NOT EXISTS public.templates (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name TEXT NOT NULL,
+    name TEXT UNIQUE NOT NULL,
     category TEXT NOT NULL,
     price INTEGER DEFAULT 0,
     thumbnail_url TEXT,
