@@ -28,6 +28,19 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   const { pathname } = request.nextUrl;
 
+  // Admin routes: proteksi dengan cookie admin_session
+  const isAdminProtected =
+    pathname.startsWith('/admin/dashboard') ||
+    pathname.startsWith('/admin/orders') ||
+    pathname.startsWith('/admin/templates');
+
+  if (isAdminProtected) {
+    const adminSession = request.cookies.get('admin_session');
+    if (!adminSession || adminSession.value !== 'true') {
+      return NextResponse.redirect(new URL('/admin/login', request.url));
+    }
+  }
+
   // Protected routes: /dashboard and /builder
   const isProtected =
     pathname.startsWith('/dashboard') ||
