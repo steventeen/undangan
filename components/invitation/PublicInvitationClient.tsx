@@ -1,7 +1,11 @@
-import { motion, AnimatePresence, useScroll, useSpring, useTransform } from 'framer-motion';
-import { MailOpen, Volume2, VolumeX, MapPin, Calendar, Clock, ChevronDown } from 'lucide-react';
+'use client';
+
+import { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
+import { MailOpen, Volume2, VolumeX, MapPin, Calendar, Clock, ChevronDown, Image as ImageIcon, Sparkles } from 'lucide-react';
 import type { Invitation } from '@/types';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase.client';
 
 interface Props {
   invitation: Partial<Invitation>;
@@ -160,7 +164,7 @@ export default function PublicInvitationClient({ invitation, guestName, guestId 
 
       {/* Main Content */}
       <div className="relative bg-white mx-auto max-w-md min-h-screen shadow-[0_0_100px_rgba(0,0,0,0.1)]">
-        {orderedSections.map((section, idx) => (
+        {orderedSections.map((section) => (
           <motion.div 
             key={section.id} 
             initial={{ opacity: 0, y: 50 }}
@@ -177,7 +181,7 @@ export default function PublicInvitationClient({ invitation, guestName, guestId 
                   <motion.div
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 1.5, duration: 1 }}
+                    transition={{ delay: 0.3, duration: 1 }}
                   >
                     <p className="text-xs tracking-[0.4em] uppercase text-gray-400 mb-6 font-bold">The Wedding Of</p>
                     <h1 
@@ -243,42 +247,6 @@ export default function PublicInvitationClient({ invitation, guestName, guestId 
               </div>
             )}
 
-              {/* === EVENT SECTION === */}
-              {section.type === 'event' && (
-                <div className="py-20 px-6 text-center bg-gray-50/50">
-                  <h2 className="text-2xl font-bold mb-8 text-gray-900">Detail Acara</h2>
-                  
-                  <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md transition-shadow">
-                    <div className="absolute top-0 left-0 w-full h-2" style={{ backgroundColor: settings.primary_color }}></div>
-                    
-                    <div className="w-16 h-16 mx-auto bg-rose-50 rounded-full flex items-center justify-center mb-6">
-                      <Calendar className="text-rose-500" size={24} />
-                    </div>
-                    
-                    <h3 className="font-bold text-xl text-gray-900 mb-2">Resepsi Pernikahan</h3>
-                    
-                    {section.data.date && (
-                      <p className="text-lg font-bold text-gray-900" style={{ color: settings.primary_color }}>
-                        {new Date(section.data.date).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                      </p>
-                    )}
-                    
-                    <div className="flex items-center justify-center gap-2 text-gray-600 font-medium mb-6">
-                      <Clock size={16} /> {section.data.time || '10:00 - Selesai'}
-                    </div>
-                    
-                    <div className="w-12 h-[1px] bg-gray-200 mx-auto my-6"></div>
-                    
-                    <div className="space-y-2 mb-8">
-                      <p className="font-bold text-gray-900 text-lg uppercase tracking-wide">{section.data.location_name || 'Nama Lokasi'}</p>
-                      <div className="flex items-start justify-center gap-2 text-gray-500 px-4">
-                        <MapPin size={16} className="mt-1 shrink-0 text-rose-500" />
-                        <p className="text-sm leading-relaxed whitespace-pre-line text-left">
-                          {section.data.address || section.data.location || 'Alamat Lengkap'}
-                        </p>
-                      </div>
-                    </div>
-            {/* === EVENT SECTION === */}
             {section.type === 'event' && (
               <div className="py-24 px-8 bg-gray-50/50">
                 <div className="bg-white rounded-[3rem] p-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-gray-100 space-y-12">
@@ -294,7 +262,9 @@ export default function PublicInvitationClient({ invitation, guestName, guestId 
                       </div>
                       <div>
                         <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1">Tanggal</p>
-                        <p className="text-lg font-bold text-gray-800">{section.data.date ? new Date(section.data.date).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'Belum diatur'}</p>
+                        <p className="text-lg font-bold text-gray-800">
+                          {section.data.date ? new Date(section.data.date).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'Belum diatur'}
+                        </p>
                       </div>
                     </div>
 
@@ -324,113 +294,114 @@ export default function PublicInvitationClient({ invitation, guestName, guestId 
                     <Link 
                       href={section.data.maps_url} 
                       target="_blank"
-                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-gray-50 rounded-full translate-y-1/2 -translate-x-1/2"></div>
-                  
-                  <div className="relative z-10">
-                    <h2 className="text-3xl font-serif font-bold mb-8 italic" style={{ color: settings.primary_color }}>
-                      {section.data.title || 'Kisah Cinta Kami'}
-                    </h2>
-                    <p className="text-gray-600 leading-relaxed text-sm whitespace-pre-line italic">
-                      "{section.data.content || 'Perjalanan cinta kami dimulai dari sebuah pertemuan yang sederhana...'}"
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* === GALLERY SECTION === */}
-              {section.type === 'gallery' && (
-                <div className="py-20 px-4 text-center bg-gray-50/50">
-                  <h2 className="text-2xl font-bold mb-8 text-gray-900">Galeri Kebahagiaan</h2>
-                  <div className="grid grid-cols-2 gap-3">
-                    {section.data.images && section.data.images.length > 0 ? (
-                      section.data.images.map((img: string, i: number) => (
-                        <div key={i} className="aspect-[3/4] bg-gray-200 rounded-2xl overflow-hidden shadow-sm border-2 border-white">
-                          <img src={img} alt="Gallery" className="w-full h-full object-cover" />
-                        </div>
-                      ))
-                    ) : (
-                      [...Array(4)].map((_, i) => (
-                        <div key={i} className="aspect-[3/4] bg-gray-200 rounded-2xl flex items-center justify-center text-gray-400 border-2 border-white">🖼️</div>
-                      ))
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* === GIFT SECTION === */}
-              {section.type === 'gift' && (
-                <div className="py-20 px-6 text-center bg-white">
-                  <h2 className="text-2xl font-bold mb-4 text-gray-900">Kado Digital</h2>
-                  <p className="text-gray-500 text-sm mb-8 px-4">Doa restu Anda merupakan kado terindah, namun jika Anda ingin memberikan tanda kasih lainnya, silakan melalui:</p>
-                  
-                  <div className="bg-gray-50 p-8 rounded-[2rem] border border-gray-100 space-y-4 shadow-inner">
-                    <div className="w-16 h-10 bg-white rounded-lg mx-auto flex items-center justify-center shadow-sm border border-gray-100 font-bold text-gray-900">
-                      {section.data.bank_name || 'BANK'}
-                    </div>
-                    <p className="text-2xl font-mono font-bold tracking-wider" style={{ color: settings.primary_color }}>
-                      {section.data.account_number || '0000000000'}
-                    </p>
-                    <p className="text-sm font-medium text-gray-700">a.n {section.data.account_holder || 'Nama Pemilik'}</p>
-                    
-                    <button 
-                      onClick={() => {
-                        navigator.clipboard.writeText(section.data.account_number || '');
-                        alert('Nomor rekening berhasil disalin!');
-                      }}
-                      className="text-xs font-bold text-rose-500 uppercase tracking-widest mt-4"
+                      className="flex items-center justify-center gap-2 w-full py-4 bg-gray-900 text-white rounded-2xl font-bold text-sm shadow-xl shadow-gray-200 hover:bg-gray-800 transition-all"
                     >
-                      Salin Rekening
-                    </button>
+                      <MapPin size={18} /> Lihat Lokasi Google Maps
+                    </Link>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {section.type === 'story' && (
+              <div className="py-24 px-8 text-center bg-white relative overflow-hidden">
+                <div className="relative z-10">
+                  <h2 className="text-3xl font-bold mb-8 italic" style={{ color: settings.primary_color, fontFamily: fontHeading }}>
+                    {section.data.title || 'Kisah Cinta Kami'}
+                  </h2>
+                  <p className="text-gray-600 leading-relaxed text-lg italic max-w-sm mx-auto">
+                    "{section.data.content || 'Perjalanan cinta kami dimulai dari sebuah pertemuan yang sederhana...'}"
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {section.type === 'gallery' && (
+              <div className="py-24 px-4 bg-white">
+                <div className="text-center mb-12">
+                  <h3 className="text-sm font-bold tracking-[0.3em] uppercase text-gray-400 mb-2">Our Moments</h3>
+                  <h4 className="text-3xl font-bold" style={{ fontFamily: fontHeading }}>Galeri Foto</h4>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  {section.data.images?.map((img: string, i: number) => (
+                    <motion.div 
+                      key={i}
+                      whileHover={{ scale: 1.02 }}
+                      className={`rounded-3xl overflow-hidden shadow-lg ${i % 3 === 0 ? 'col-span-2 aspect-video' : 'aspect-square'}`}
+                    >
+                      <img src={img} className="w-full h-full object-cover" alt={`Gallery ${i}`} />
+                    </motion.div>
+                  )) || (
+                    <div className="col-span-2 py-20 text-center bg-gray-50 rounded-[3rem] text-gray-300">
+                       <ImageIcon size={48} className="mx-auto mb-4 opacity-20" />
+                       <p className="text-xs font-bold uppercase tracking-widest">Belum ada foto</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {section.type === 'rsvp' && settings.show_rsvp && (
+              <div className="py-24 px-8 bg-gray-50/50">
+                <RSVPForm invitationId={invitation.id!} guestId={guestId} guestName={guestName} primaryColor={settings.primary_color} fontHeading={fontHeading} />
+              </div>
+            )}
+
+            {section.type === 'guestbook' && settings.show_guestbook && (
+              <div className="py-24 px-8 bg-white">
+                <Guestbook invitationId={invitation.id!} guestName={guestName} primaryColor={settings.primary_color} fontHeading={fontHeading} />
+              </div>
+            )}
+
+            {section.type === 'gift' && (
+              <div className="py-24 px-8 bg-white text-center">
+                <h3 className="text-sm font-bold tracking-[0.3em] uppercase text-gray-400 mb-2">Wedding Gift</h3>
+                <h4 className="text-3xl font-bold mb-8" style={{ fontFamily: fontHeading }}>Kirim Hadiah</h4>
+                <div className="p-8 rounded-[3rem] border-2 border-dashed border-gray-100 space-y-6">
+                  <div className="w-16 h-10 bg-rose-50 rounded-lg mx-auto flex items-center justify-center text-rose-500 font-bold italic">{section.data.bank_name || 'BANK'}</div>
+                  <div>
+                    <p className="text-xl font-bold tracking-widest text-gray-800">{section.data.account_number || '0000000000'}</p>
+                    <p className="text-xs text-gray-400 uppercase tracking-widest mt-1">a.n {section.data.account_holder || 'Nama Penerima'}</p>
                   </div>
                 </div>
-              )}
+              </div>
+            )}
 
-              {/* === CLOSING SECTION === */}
-              {section.type === 'closing' && (
-                <div className="py-24 px-10 text-center bg-white relative">
-                  <div className="absolute inset-0 opacity-5" style={{ backgroundColor: settings.primary_color }}></div>
-                  <div className="relative z-10">
-                    <p className="text-gray-600 leading-relaxed text-sm mb-12">
-                      {section.data.content || 'Terima kasih atas perhatian dan doa restu Anda. Sampai jumpa di hari bahagia kami.'}
-                    </p>
-                    <h3 className="text-xl font-bold text-gray-900">Kami Yang Berbahagia,</h3>
-                    <p className="text-3xl font-serif font-bold mt-4" style={{ color: settings.primary_color }}>
-                      {invitation.title}
-                    </p>
+            {section.type === 'closing' && (
+              <div className="py-32 px-10 text-center bg-gray-50/50">
+                <div className="space-y-8">
+                  <p className="text-lg text-gray-600 leading-relaxed italic" style={{ fontFamily: fontHeading }}>
+                    "{section.data.content || 'Terima kasih atas doa restu Bapak/Ibu/Saudara/i sekalian. Sampai jumpa di hari bahagia kami.'}"
+                  </p>
+                  <div className="h-px w-12 bg-gray-200 mx-auto" />
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Kami yang berbahagia</p>
+                    <h4 className="text-2xl font-bold" style={{ fontFamily: fontHeading, color: settings.primary_color }}>{title}</h4>
                   </div>
                 </div>
-              )}
-
-              {/* === RSVP SECTION === */}
-              {section.type === 'rsvp' && settings.show_rsvp && (
-                <RSVPForm invitationId={invitation.id!} guestId={guestId} guestName={guestName} primaryColor={settings.primary_color} />
-              )}
-
-              {/* === GUESTBOOK SECTION === */}
-              {section.type === 'guestbook' && settings.show_guestbook && (
-                <Guestbook invitationId={invitation.id!} guestName={guestName} primaryColor={settings.primary_color} />
-              )}
-
-            </div>
-          ))}
-
-          {/* Viral Footer */}
-          {settings.viral_footer && (
-            <div className="py-8 text-center border-t border-gray-100 bg-gray-50">
-              <p className="text-xs text-gray-500 mb-2">Ingin membuat undangan digital seperti ini?</p>
-              <Link href="/" target="_blank" className="inline-flex items-center gap-2 font-serif font-bold text-gray-900 hover:text-rose-600 transition-colors">
-                <span className="text-xl">💌</span> UndanganDigital
-              </Link>
-            </div>
-          )}
-        </div>
-      )}
+              </div>
+            )}
+          </motion.div>
+        ))}
+        
+        {/* Viral Footer */}
+        {settings.viral_footer && (
+          <div className="py-12 text-center bg-white border-t border-gray-100">
+            <Link href="/" className="inline-flex flex-col items-center gap-1">
+              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-gray-300">Created with love by</span>
+              <span className="text-sm font-bold tracking-tighter text-gray-900 flex items-center gap-1">
+                <Sparkles size={14} className="text-rose-500" /> UndanganDigital
+              </span>
+            </Link>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
-// Sub-component for RSVP to keep it clean
-function RSVPForm({ invitationId, guestId, guestName, primaryColor }: { invitationId: string, guestId: string | null, guestName: string | null, primaryColor: string }) {
+// Sub-components
+function RSVPForm({ invitationId, guestId, guestName, primaryColor, fontHeading }: any) {
   const [status, setStatus] = useState<'idle'|'loading'|'success'>('idle');
   const [attendance, setAttendance] = useState('yes');
   const [count, setCount] = useState('1');
@@ -439,7 +410,6 @@ function RSVPForm({ invitationId, guestId, guestName, primaryColor }: { invitati
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setStatus('loading');
-    
     const { error } = await supabase.from('rsvp').insert({
       invitation_id: invitationId,
       guest_id: guestId,
@@ -447,66 +417,24 @@ function RSVPForm({ invitationId, guestId, guestName, primaryColor }: { invitati
       attendance,
       guest_count: parseInt(count),
     });
-
-    if (error) {
-      alert('Gagal mengirim RSVP');
-      setStatus('idle');
-    } else {
-      setStatus('success');
-      if (guestId && attendance !== 'maybe') {
-        supabase.from('guests').update({ status: attendance === 'yes' ? 'rsvp_yes' : 'rsvp_no' }).eq('id', guestId).then();
-      }
-    }
+    if (error) { alert('Gagal mengirim RSVP'); setStatus('idle'); }
+    else { setStatus('success'); }
   }
 
   return (
-    <div className="py-20 px-6 bg-white border-t border-gray-50">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Konfirmasi Kehadiran</h2>
-        <p className="text-gray-500 text-sm">Merupakan kehormatan bagi kami apabila Anda berkenan hadir.</p>
-      </div>
-
+    <div className="bg-gray-900 rounded-[3rem] p-10 text-white text-center space-y-8 shadow-2xl">
+      <h3 className="text-sm font-bold tracking-[0.3em] uppercase text-white/40">Konfirmasi Kehadiran</h3>
+      <h4 className="text-3xl font-bold" style={{ fontFamily: fontHeading }}>Apakah Anda akan hadir?</h4>
       {status === 'success' ? (
-        <div className="bg-green-50 text-green-700 p-6 rounded-2xl text-center border border-green-100">
-          <p className="text-4xl mb-2">✅</p>
-          <p className="font-medium">Terima kasih atas konfirmasinya!</p>
-        </div>
+        <p className="text-rose-400 font-bold">Terima kasih atas konfirmasinya!</p>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input 
-            type="text" 
-            required 
-            value={name} 
-            onChange={e => setName(e.target.value)} 
-            placeholder="Nama Lengkap" 
-            className="input w-full bg-gray-50 border-gray-100" 
-            readOnly={!!guestName}
-          />
-          <select 
-            value={attendance} 
-            onChange={e => setAttendance(e.target.value)} 
-            className="input w-full bg-gray-50 border-gray-100"
-          >
-            <option value="yes">Ya, Saya Akan Hadir</option>
-            <option value="no">Maaf, Tidak Bisa Hadir</option>
-            <option value="maybe">Mungkin Hadir</option>
+          <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Nama Lengkap" className="w-full bg-white/10 border border-white/10 rounded-2xl px-6 py-4 text-white text-sm focus:outline-none focus:border-rose-500 transition-all" required />
+          <select value={attendance} onChange={e => setAttendance(e.target.value)} className="w-full bg-white/10 border border-white/10 rounded-2xl px-6 py-4 text-white text-sm focus:outline-none focus:border-rose-500 transition-all">
+            <option value="yes" className="text-black">Ya, Saya Hadir</option>
+            <option value="no" className="text-black">Maaf, Tidak Hadir</option>
           </select>
-          {attendance === 'yes' && (
-            <select 
-              value={count} 
-              onChange={e => setCount(e.target.value)} 
-              className="input w-full bg-gray-50 border-gray-100"
-            >
-              <option value="1">1 Orang</option>
-              <option value="2">2 Orang</option>
-            </select>
-          )}
-          <button 
-            type="submit" 
-            className="btn text-white w-full shadow-md"
-            style={{ backgroundColor: primaryColor }}
-            disabled={status === 'loading'}
-          >
+          <button type="submit" disabled={status === 'loading'} className="w-full py-4 bg-white text-black rounded-2xl font-bold text-sm hover:bg-gray-100 transition-all">
             {status === 'loading' ? 'Mengirim...' : 'Kirim Konfirmasi'}
           </button>
         </form>
@@ -515,99 +443,45 @@ function RSVPForm({ invitationId, guestId, guestName, primaryColor }: { invitati
   );
 }
 
-// Sub-component for Guestbook (Realtime)
-function Guestbook({ invitationId, guestName, primaryColor }: { invitationId: string, guestName: string | null, primaryColor: string }) {
+function Guestbook({ invitationId, guestName, primaryColor, fontHeading }: any) {
   const [messages, setMessages] = useState<any[]>([]);
   const [name, setName] = useState(guestName || '');
   const [msg, setMsg] = useState('');
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // Initial fetch
-    supabase.from('guestbook')
-      .select('*')
-      .eq('invitation_id', invitationId)
-      .order('created_at', { ascending: false })
-      .limit(20)
-      .then((res: any) => { if (res.data) setMessages(res.data) });
-
-    // Subscribe to realtime
-    const channel = supabase.channel('realtime_guestbook')
-      .on('postgres_changes', {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'guestbook',
-        filter: `invitation_id=eq.${invitationId}`
-      }, (payload: any) => {
-        setMessages(prev => [payload.new, ...prev]);
-      })
-      .subscribe();
-
-    return () => { supabase.removeChannel(channel); };
+    supabase.from('guestbook').select('*').eq('invitation_id', invitationId).order('created_at', { ascending: false }).limit(10).then((res: any) => { if (res.data) setMessages(res.data) });
   }, [invitationId]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!msg.trim()) return;
     setLoading(true);
-
-    await supabase.from('guestbook').insert({
-      invitation_id: invitationId,
-      name: name || 'Tamu',
-      message: msg
-    });
-
+    await supabase.from('guestbook').insert({ invitation_id: invitationId, name: name || 'Tamu', message: msg });
     setMsg('');
     setLoading(false);
+    // Refresh
+    supabase.from('guestbook').select('*').eq('invitation_id', invitationId).order('created_at', { ascending: false }).limit(10).then((res: any) => { if (res.data) setMessages(res.data) });
   }
 
   return (
-    <div className="py-20 px-6 bg-gray-50/50">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Buku Tamu</h2>
-        <p className="text-gray-500 text-sm">Tinggalkan pesan dan harapan Anda.</p>
+    <div className="space-y-12">
+      <div className="text-center">
+        <h3 className="text-sm font-bold tracking-[0.3em] uppercase text-gray-400 mb-2">Guestbook</h3>
+        <h4 className="text-3xl font-bold" style={{ fontFamily: fontHeading }}>Buku Tamu</h4>
       </div>
-
-      <form onSubmit={handleSubmit} className="mb-8 space-y-3 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-        <input 
-          type="text" 
-          value={name} 
-          onChange={e => setName(e.target.value)} 
-          placeholder="Nama Anda" 
-          className="input text-sm py-2" 
-          required 
-          readOnly={!!guestName}
-        />
-        <textarea 
-          value={msg} 
-          onChange={e => setMsg(e.target.value)} 
-          placeholder="Tulis ucapan dan doa restu..." 
-          className="input text-sm h-20 resize-none" 
-          required 
-        />
-        <button 
-          type="submit" 
-          disabled={loading} 
-          className="btn text-white w-full py-2 text-sm"
-          style={{ backgroundColor: primaryColor }}
-        >
-          Kirim Ucapan
-        </button>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Nama Anda" className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-sm focus:outline-none focus:border-rose-500 transition-all" required />
+        <textarea value={msg} onChange={e => setMsg(e.target.value)} placeholder="Tulis ucapan..." className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-6 py-4 text-sm h-32 resize-none focus:outline-none focus:border-rose-500 transition-all" required />
+        <button type="submit" disabled={loading} className="w-full py-4 bg-gray-900 text-white rounded-2xl font-bold text-sm hover:bg-gray-800 transition-all">Kirim Ucapan</button>
       </form>
-
-      <div className="space-y-3 max-h-96 overflow-y-auto pr-2 no-scrollbar">
+      <div className="space-y-4">
         {messages.map(m => (
-          <div key={m.id} className="bg-white p-4 rounded-xl border border-gray-100 text-left">
-            <p className="font-semibold text-gray-900 text-sm">{m.name}</p>
-            <p className="text-gray-600 text-sm mt-1">{m.message}</p>
-            <p className="text-[10px] text-gray-400 mt-2">
-              {new Date(m.created_at).toLocaleDateString('id-ID', { month: 'short', day: 'numeric' })}
-            </p>
+          <div key={m.id} className="p-6 bg-gray-50 rounded-[2rem] border border-gray-100 text-left">
+            <p className="font-bold text-gray-900 text-sm mb-1">{m.name}</p>
+            <p className="text-gray-600 text-sm italic">"{m.message}"</p>
           </div>
         ))}
-        {messages.length === 0 && (
-          <p className="text-center text-gray-400 text-sm italic">Belum ada ucapan.</p>
-        )}
       </div>
     </div>
   );

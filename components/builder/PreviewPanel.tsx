@@ -43,7 +43,7 @@ export default function PreviewPanel() {
         <div 
           className="w-full h-full overflow-y-auto no-scrollbar relative"
           style={{ 
-            fontFamily: settings.font,
+            fontFamily: settings.font_heading,
             backgroundColor: '#ffffff'
           }}
         >
