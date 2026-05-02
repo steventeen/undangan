@@ -35,7 +35,7 @@ export interface InvitationSettings {
 
 export interface InvitationSection {
   id: string;
-  type: 'cover' | 'couple' | 'event' | 'gallery' | 'rsvp' | 'guestbook' | 'gift' | 'closing';
+  type: 'cover' | 'couple' | 'event' | 'story' | 'gallery' | 'rsvp' | 'guestbook' | 'gift' | 'closing';
   enabled: boolean;
   order: number;
   data: Record<string, any>;
