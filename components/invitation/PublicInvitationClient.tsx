@@ -109,21 +109,35 @@ export default function PublicInvitationClient({ invitation, guestName, guestId 
           {orderedSections.map((section) => (
             <div key={section.id} id={section.id} className="w-full relative">
               
-              {/* === COVER SECTION === */}
-              {section.type === 'cover' && (
-                <div className="min-h-[90vh] flex flex-col items-center justify-center text-center p-8 relative overflow-hidden">
-                  <div className="absolute inset-0 opacity-10" style={{ backgroundColor: settings.primary_color }}></div>
-                  <div className="relative z-10 space-y-6">
-                    <p className="text-xs tracking-[0.3em] uppercase text-gray-500">The Wedding Of</p>
-                    <h1 
-                      className="text-5xl font-bold leading-tight"
-                      style={{ color: settings.primary_color }}
-                    >
-                      {section.data.headline || title}
-                    </h1>
-                    <p className="text-gray-600 italic">
-                      {section.data.subtitle || 'We are getting married'}
+              {/* === COUPLE SECTION === */}
+              {section.type === 'couple' && (
+                <div className="py-20 px-6 text-center space-y-12 bg-white">
+                  <div className="space-y-4 animate-fade-in">
+                    <div className="w-40 h-40 bg-gray-100 rounded-full mx-auto flex items-center justify-center text-4xl border-4 shadow-xl" style={{ borderColor: settings.primary_color }}>🤵</div>
+                    <h3 className="text-3xl font-bold text-gray-900" style={{ color: settings.primary_color }}>{section.data.groom_name || 'Nama Mempelai Pria'}</h3>
+                    <p className="text-sm text-gray-600 px-8 leading-relaxed">
+                      Putra dari <br/>
+                      <span className="font-bold">Bpk. {section.data.groom_father || '...'}</span> <br/>
+                      & <span className="font-bold">Ibu {section.data.groom_mother || '...'}</span>
                     </p>
+                    {section.data.groom_ig && (
+                      <a href={`https://instagram.com/${section.data.groom_ig}`} target="_blank" className="inline-block text-xs font-medium text-rose-500 bg-rose-50 px-3 py-1 rounded-full">@{section.data.groom_ig}</a>
+                    )}
+                  </div>
+                  
+                  <div className="text-5xl font-serif italic py-4" style={{ color: settings.primary_color }}>&</div>
+                  
+                  <div className="space-y-4 animate-fade-in">
+                    <div className="w-40 h-40 bg-gray-100 rounded-full mx-auto flex items-center justify-center text-4xl border-4 shadow-xl" style={{ borderColor: settings.primary_color }}>👰</div>
+                    <h3 className="text-3xl font-bold text-gray-900" style={{ color: settings.primary_color }}>{section.data.bride_name || 'Nama Mempelai Wanita'}</h3>
+                    <p className="text-sm text-gray-600 px-8 leading-relaxed">
+                      Putri dari <br/>
+                      <span className="font-bold">Bpk. {section.data.bride_father || '...'}</span> <br/>
+                      & <span className="font-bold">Ibu {section.data.bride_mother || '...'}</span>
+                    </p>
+                    {section.data.bride_ig && (
+                      <a href={`https://instagram.com/${section.data.bride_ig}`} target="_blank" className="inline-block text-xs font-medium text-rose-500 bg-rose-50 px-3 py-1 rounded-full">@{section.data.bride_ig}</a>
+                    )}
                   </div>
                 </div>
               )}
@@ -133,43 +147,127 @@ export default function PublicInvitationClient({ invitation, guestName, guestId 
                 <div className="py-20 px-6 text-center bg-gray-50/50">
                   <h2 className="text-2xl font-bold mb-8 text-gray-900">Detail Acara</h2>
                   
-                  <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden">
+                  <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group hover:shadow-md transition-shadow">
                     <div className="absolute top-0 left-0 w-full h-2" style={{ backgroundColor: settings.primary_color }}></div>
                     
-                    <div className="w-16 h-16 mx-auto bg-rose-50 rounded-full flex items-center justify-center mb-4">
+                    <div className="w-16 h-16 mx-auto bg-rose-50 rounded-full flex items-center justify-center mb-6">
                       <Calendar className="text-rose-500" size={24} />
                     </div>
                     
-                    <h3 className="font-semibold text-lg text-gray-900 mb-2">Resepsi Pernikahan</h3>
+                    <h3 className="font-bold text-xl text-gray-900 mb-2">Resepsi Pernikahan</h3>
                     
                     {section.data.date && (
-                      <p className="text-gray-600 font-medium mb-1">
+                      <p className="text-lg font-bold text-gray-900" style={{ color: settings.primary_color }}>
                         {new Date(section.data.date).toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                       </p>
                     )}
                     
-                    <div className="flex items-center justify-center gap-2 text-gray-500 text-sm mb-6">
-                      <Clock size={14} /> 09:00 - Selesai
+                    <div className="flex items-center justify-center gap-2 text-gray-600 font-medium mb-6">
+                      <Clock size={16} /> {section.data.time || '10:00 - Selesai'}
                     </div>
                     
-                    <div className="w-12 h-[1px] bg-gray-200 mx-auto my-4"></div>
+                    <div className="w-12 h-[1px] bg-gray-200 mx-auto my-6"></div>
                     
-                    <div className="flex items-start justify-center gap-2 text-gray-600 mb-6">
-                      <MapPin size={16} className="mt-1 shrink-0 text-rose-500" />
-                      <p className="text-sm leading-relaxed whitespace-pre-line text-left">
-                        {section.data.location || 'Lokasi Acara'}
-                      </p>
+                    <div className="space-y-2 mb-8">
+                      <p className="font-bold text-gray-900 text-lg uppercase tracking-wide">{section.data.location_name || 'Nama Lokasi'}</p>
+                      <div className="flex items-start justify-center gap-2 text-gray-500 px-4">
+                        <MapPin size={16} className="mt-1 shrink-0 text-rose-500" />
+                        <p className="text-sm leading-relaxed whitespace-pre-line text-left">
+                          {section.data.address || section.data.location || 'Alamat Lengkap'}
+                        </p>
+                      </div>
                     </div>
 
                     <a 
-                      href={section.data.location_url || `https://maps.google.com/?q=${encodeURIComponent(section.data.location || '')}`}
+                      href={section.data.maps_url || section.data.location_url || `https://maps.google.com/?q=${encodeURIComponent(section.data.location_name || section.data.location || '')}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-block px-6 py-2 rounded-full text-sm font-medium text-white shadow-md hover:-translate-y-0.5 transition-transform"
+                      className="inline-flex items-center gap-2 px-8 py-3 rounded-full text-sm font-bold text-white shadow-lg hover:scale-105 active:scale-95 transition-all"
                       style={{ backgroundColor: settings.primary_color }}
                     >
-                      Buka Google Maps
+                      <MapPin size={16} /> Buka Google Maps
                     </a>
+                  </div>
+                </div>
+              )}
+
+              {/* === STORY SECTION === */}
+              {section.type === 'story' && (
+                <div className="py-24 px-8 text-center bg-white relative overflow-hidden">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gray-50 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-gray-50 rounded-full translate-y-1/2 -translate-x-1/2"></div>
+                  
+                  <div className="relative z-10">
+                    <h2 className="text-3xl font-serif font-bold mb-8 italic" style={{ color: settings.primary_color }}>
+                      {section.data.title || 'Kisah Cinta Kami'}
+                    </h2>
+                    <p className="text-gray-600 leading-relaxed text-sm whitespace-pre-line italic">
+                      "{section.data.content || 'Perjalanan cinta kami dimulai dari sebuah pertemuan yang sederhana...'}"
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* === GALLERY SECTION === */}
+              {section.type === 'gallery' && (
+                <div className="py-20 px-4 text-center bg-gray-50/50">
+                  <h2 className="text-2xl font-bold mb-8 text-gray-900">Galeri Kebahagiaan</h2>
+                  <div className="grid grid-cols-2 gap-3">
+                    {section.data.images && section.data.images.length > 0 ? (
+                      section.data.images.map((img: string, i: number) => (
+                        <div key={i} className="aspect-[3/4] bg-gray-200 rounded-2xl overflow-hidden shadow-sm border-2 border-white">
+                          <img src={img} alt="Gallery" className="w-full h-full object-cover" />
+                        </div>
+                      ))
+                    ) : (
+                      [...Array(4)].map((_, i) => (
+                        <div key={i} className="aspect-[3/4] bg-gray-200 rounded-2xl flex items-center justify-center text-gray-400 border-2 border-white">🖼️</div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* === GIFT SECTION === */}
+              {section.type === 'gift' && (
+                <div className="py-20 px-6 text-center bg-white">
+                  <h2 className="text-2xl font-bold mb-4 text-gray-900">Kado Digital</h2>
+                  <p className="text-gray-500 text-sm mb-8 px-4">Doa restu Anda merupakan kado terindah, namun jika Anda ingin memberikan tanda kasih lainnya, silakan melalui:</p>
+                  
+                  <div className="bg-gray-50 p-8 rounded-[2rem] border border-gray-100 space-y-4 shadow-inner">
+                    <div className="w-16 h-10 bg-white rounded-lg mx-auto flex items-center justify-center shadow-sm border border-gray-100 font-bold text-gray-900">
+                      {section.data.bank_name || 'BANK'}
+                    </div>
+                    <p className="text-2xl font-mono font-bold tracking-wider" style={{ color: settings.primary_color }}>
+                      {section.data.account_number || '0000000000'}
+                    </p>
+                    <p className="text-sm font-medium text-gray-700">a.n {section.data.account_holder || 'Nama Pemilik'}</p>
+                    
+                    <button 
+                      onClick={() => {
+                        navigator.clipboard.writeText(section.data.account_number || '');
+                        alert('Nomor rekening berhasil disalin!');
+                      }}
+                      className="text-xs font-bold text-rose-500 uppercase tracking-widest mt-4"
+                    >
+                      Salin Rekening
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* === CLOSING SECTION === */}
+              {section.type === 'closing' && (
+                <div className="py-24 px-10 text-center bg-white relative">
+                  <div className="absolute inset-0 opacity-5" style={{ backgroundColor: settings.primary_color }}></div>
+                  <div className="relative z-10">
+                    <p className="text-gray-600 leading-relaxed text-sm mb-12">
+                      {section.data.content || 'Terima kasih atas perhatian dan doa restu Anda. Sampai jumpa di hari bahagia kami.'}
+                    </p>
+                    <h3 className="text-xl font-bold text-gray-900">Kami Yang Berbahagia,</h3>
+                    <p className="text-3xl font-serif font-bold mt-4" style={{ color: settings.primary_color }}>
+                      {invitation.title}
+                    </p>
                   </div>
                 </div>
               )}

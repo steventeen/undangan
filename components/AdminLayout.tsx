@@ -6,6 +6,7 @@ import Link from 'next/link';
 import {
   LayoutDashboard,
   ShoppingCart,
+  Users,
   LayoutTemplate,
   LogOut,
   Menu,
@@ -17,6 +18,7 @@ import {
 const navItems = [
   { href: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/admin/orders', label: 'Pesanan', icon: ShoppingCart },
+  { href: '/admin/users', label: 'Pengguna', icon: Users },
   { href: '/admin/templates', label: 'Template', icon: LayoutTemplate },
 ];
 

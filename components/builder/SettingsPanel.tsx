@@ -115,11 +115,34 @@ export default function SettingsPanel() {
                           </div>
                         </>
                       )}
+
+                      {section.type === 'couple' && (
+                        <div className="space-y-4">
+                          <div className="p-3 bg-white rounded-lg border border-gray-100">
+                            <p className="text-[10px] font-bold text-gray-400 uppercase mb-3">Mempelai Pria</p>
+                            <div className="space-y-3">
+                              <input type="text" className="input py-2 text-sm" placeholder="Nama Lengkap Pria" value={section.data.groom_name || ''} onChange={(e) => updateSection(section.id, { groom_name: e.target.value })} />
+                              <input type="text" className="input py-2 text-sm" placeholder="Nama Ayah" value={section.data.groom_father || ''} onChange={(e) => updateSection(section.id, { groom_father: e.target.value })} />
+                              <input type="text" className="input py-2 text-sm" placeholder="Nama Ibu" value={section.data.groom_mother || ''} onChange={(e) => updateSection(section.id, { groom_mother: e.target.value })} />
+                              <input type="text" className="input py-2 text-sm" placeholder="Username Instagram" value={section.data.groom_ig || ''} onChange={(e) => updateSection(section.id, { groom_ig: e.target.value })} />
+                            </div>
+                          </div>
+                          <div className="p-3 bg-white rounded-lg border border-gray-100">
+                            <p className="text-[10px] font-bold text-gray-400 uppercase mb-3">Mempelai Wanita</p>
+                            <div className="space-y-3">
+                              <input type="text" className="input py-2 text-sm" placeholder="Nama Lengkap Wanita" value={section.data.bride_name || ''} onChange={(e) => updateSection(section.id, { bride_name: e.target.value })} />
+                              <input type="text" className="input py-2 text-sm" placeholder="Nama Ayah" value={section.data.bride_father || ''} onChange={(e) => updateSection(section.id, { bride_father: e.target.value })} />
+                              <input type="text" className="input py-2 text-sm" placeholder="Nama Ibu" value={section.data.bride_mother || ''} onChange={(e) => updateSection(section.id, { bride_mother: e.target.value })} />
+                              <input type="text" className="input py-2 text-sm" placeholder="Username Instagram" value={section.data.bride_ig || ''} onChange={(e) => updateSection(section.id, { bride_ig: e.target.value })} />
+                            </div>
+                          </div>
+                        </div>
+                      )}
                       
                       {section.type === 'event' && (
-                        <>
+                        <div className="space-y-4">
                           <div>
-                            <label className="label text-xs">Tanggal</label>
+                            <label className="label text-xs">Tanggal Acara</label>
                             <input 
                               type="date" 
                               className="input py-2 text-sm" 
@@ -128,21 +151,105 @@ export default function SettingsPanel() {
                             />
                           </div>
                           <div>
-                            <label className="label text-xs">Lokasi</label>
-                            <textarea 
-                              className="input py-2 text-sm h-20 resize-none" 
-                              value={section.data.location || ''} 
-                              onChange={(e) => updateSection(section.id, { location: e.target.value })}
-                              placeholder="Nama gedung & alamat lengkap"
+                            <label className="label text-xs">Waktu Acara</label>
+                            <input 
+                              type="text" 
+                              className="input py-2 text-sm" 
+                              value={section.data.time || ''} 
+                              onChange={(e) => updateSection(section.id, { time: e.target.value })}
+                              placeholder="10:00 - Selesai"
                             />
                           </div>
-                        </>
+                          <div>
+                            <label className="label text-xs">Lokasi / Nama Gedung</label>
+                            <input 
+                              type="text" 
+                              className="input py-2 text-sm" 
+                              value={section.data.location_name || ''} 
+                              onChange={(e) => updateSection(section.id, { location_name: e.target.value })}
+                              placeholder="Hotel Mulia Senayan"
+                            />
+                          </div>
+                          <div>
+                            <label className="label text-xs">Alamat Lengkap</label>
+                            <textarea 
+                              className="input py-2 text-sm h-20 resize-none" 
+                              value={section.data.address || ''} 
+                              onChange={(e) => updateSection(section.id, { address: e.target.value })}
+                              placeholder="Jl. Asia Afrika, Jakarta Pusat..."
+                            />
+                          </div>
+                          <div>
+                            <label className="label text-xs">URL Google Maps</label>
+                            <input 
+                              type="url" 
+                              className="input py-2 text-sm" 
+                              value={section.data.maps_url || ''} 
+                              onChange={(e) => updateSection(section.id, { maps_url: e.target.value })}
+                              placeholder="https://goo.gl/maps/..."
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {section.type === 'story' && (
+                        <div className="space-y-4">
+                          <div>
+                            <label className="label text-xs">Judul Cerita</label>
+                            <input type="text" className="input py-2 text-sm" value={section.data.title || ''} onChange={(e) => updateSection(section.id, { title: e.target.value })} placeholder="Perjalanan Cinta Kami" />
+                          </div>
+                          <div>
+                            <label className="label text-xs">Isi Cerita</label>
+                            <textarea 
+                              className="input py-2 text-sm h-32 resize-none" 
+                              value={section.data.content || ''} 
+                              onChange={(e) => updateSection(section.id, { content: e.target.value })}
+                              placeholder="Ceritakan bagaimana Anda bertemu..."
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {section.type === 'gallery' && (
+                        <div className="space-y-3">
+                          <p className="text-xs text-gray-500">Masukkan URL gambar untuk galeri (pisahkan dengan baris baru).</p>
+                          <textarea 
+                            className="input py-2 text-sm h-32 resize-none font-mono" 
+                            value={section.data.images?.join('\n') || ''} 
+                            onChange={(e) => updateSection(section.id, { images: e.target.value.split('\n').filter(i => i.trim()) })}
+                            placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg"
+                          />
+                        </div>
+                      )}
+
+                      {section.type === 'gift' && (
+                        <div className="space-y-4">
+                          <div className="p-3 bg-white rounded-lg border border-gray-100">
+                            <p className="text-[10px] font-bold text-gray-400 uppercase mb-3">Rekening Bank / E-Wallet</p>
+                            <div className="space-y-3">
+                              <input type="text" className="input py-2 text-sm" placeholder="Nama Bank (misal: BCA)" value={section.data.bank_name || ''} onChange={(e) => updateSection(section.id, { bank_name: e.target.value })} />
+                              <input type="text" className="input py-2 text-sm" placeholder="Nomor Rekening" value={section.data.account_number || ''} onChange={(e) => updateSection(section.id, { account_number: e.target.value })} />
+                              <input type="text" className="input py-2 text-sm" placeholder="Atas Nama" value={section.data.account_holder || ''} onChange={(e) => updateSection(section.id, { account_holder: e.target.value })} />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {section.type === 'closing' && (
+                        <div>
+                          <label className="label text-xs">Pesan Penutup</label>
+                          <textarea 
+                            className="input py-2 text-sm h-24 resize-none" 
+                            value={section.data.content || ''} 
+                            onChange={(e) => updateSection(section.id, { content: e.target.value })}
+                            placeholder="Terima kasih atas doa restu Bapak/Ibu..."
+                          />
+                        </div>
                       )}
                       
-                      {/* Placeholder for other section types */}
-                      {['rsvp', 'guestbook', 'gallery'].includes(section.type) && (
+                      {section.type === 'rsvp' && (
                         <p className="text-xs text-gray-500 italic text-center py-2">
-                          Tidak ada pengaturan teks untuk bagian ini.
+                          RSVP akan muncul secara otomatis di undangan.
                         </p>
                       )}
                     </div>

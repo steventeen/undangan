@@ -98,4 +98,47 @@ values
         <p class="venue">{{alamat}}</p>
         <a href="{{link_maps}}" class="btn-gold">View Map</a>
     </div>
-</div>', 250000);
+</div>', 250000),
+
+('Ethnic Javanese', 'wedding', '/templates/ethnic.jpg', 
+'<div class="ethnic-javanese-container" style="background:#fff9f0; color:#4a3728; border:10px solid #8b4513;">
+    <h2 style="font-family:serif;">Serat Ulem</h2>
+    <h1>{{nama_pria}} & {{nama_wanita}}</h1>
+    <p>Kanti rumaos syukur dumateng Gusti Ingkang Moho Agung...</p>
+    <p>{{tanggal}} | {{waktu}}</p>
+    <p>{{alamat}}</p>
+</div>', 175000),
+
+('Dark Elegant', 'wedding', '/templates/dark.jpg', 
+'<div class="dark-elegant-container" style="background:#1a1a1a; color:#d4af37; padding:60px 20px;">
+    <h1 style="font-size:3rem;">{{nama_pria}} & {{nama_wanita}}</h1>
+    <p style="letter-spacing:4px; color:#fff;">SAVE THE DATE</p>
+    <div style="margin:40px 0; border:1px solid #d4af37; padding:20px;">
+        <p>{{tanggal}}</p>
+        <p>{{alamat}}</p>
+    </div>
+</div>', 200000),
+
+('Floral Garden', 'birthday', '/templates/floral.jpg', 
+'<div class="floral-garden-container" style="background:#f0f7f0; color:#2d5a27; border-radius:30px; padding:40px;">
+    <h1 style="color:#d63384;">{{title}}</h1>
+    <p>Join us for a floral celebration!</p>
+    <p>Date: {{tanggal}}</p>
+    <p>Location: {{alamat}}</p>
+</div>', 100000),
+
+('Minimalist Clean', 'corporate', '/templates/minimal.jpg', 
+'<div class="minimalist-clean-container" style="background:#fff; color:#000; padding:100px 40px; border:1px solid #eee;">
+    <h1 style="font-weight:900; letter-spacing:-2px;">{{title}}</h1>
+    <hr style="width:50px; margin:30px 0; border-top:5px solid #000;"/>
+    <p>{{tanggal}} • {{waktu}}</p>
+    <p>{{alamat}}</p>
+</div>', 150000),
+
+('Vintage Paper', 'wedding', '/templates/vintage.jpg', 
+'<div class="vintage-paper-container" style="background:#e8dcc4; color:#5d4037; border:2px solid #a1887f; padding:50px;">
+    <h1 style="font-family:''Old English Text MT'', serif;">{{nama_pria}} & {{nama_wanita}}</h1>
+    <p style="font-style:italic;">Request the pleasure of your company</p>
+    <p>{{tanggal}}</p>
+    <p>{{alamat}}</p>
+</div>', 180000);

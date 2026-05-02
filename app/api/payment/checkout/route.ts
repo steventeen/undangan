@@ -72,9 +72,9 @@ export async function GET(req: Request) {
       }
     };
 
-    // If API keys are placeholders, just simulate a successful transaction for testing
+    // If API keys are placeholders, redirect to simulation page instead of auto-success
     if (snap.apiConfig.serverKey === 'SB-Mid-server-placeholder') {
-      return NextResponse.redirect(new URL(`/api/payment/webhook?mock_success=true&order_id=${externalId}`, req.url));
+      return NextResponse.redirect(new URL(`/dashboard/subscription/simulate?order_id=${externalId}&plan=${plan}`, req.url));
     }
 
     const transaction = await snap.createTransaction(parameter);
