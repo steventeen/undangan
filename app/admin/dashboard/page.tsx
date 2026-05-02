@@ -56,9 +56,9 @@ export default function AdminDashboardPage() {
 
         const totalTemplates = templatesRes.count || 0;
         const totalOrders = ordersData?.length || 0;
-        const verifiedOrders = ordersData?.filter(o => o.payment_status === 'verified').length || 0;
-        const totalRevenue = ordersData?.filter(o => o.payment_status === 'verified')
-          .reduce((acc, o: any) => acc + (o.templates?.price || 0), 0) || 0;
+        const verifiedOrders = ordersData?.filter((o: any) => o.payment_status === 'verified').length || 0;
+        const totalRevenue = ordersData?.filter((o: any) => o.payment_status === 'verified')
+          .reduce((acc: number, o: any) => acc + (o.templates?.price || 0), 0) || 0;
 
         setStats({
           totalTemplates,
