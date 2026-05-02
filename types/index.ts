@@ -22,7 +22,9 @@ export interface InvitationSettings {
   music_url: string | null;
   music_autoplay: boolean;
   primary_color: string;
-  font: string;
+  accent_color?: string;
+  font_heading: string;
+  font_body: string;
   language: 'id' | 'en';
   show_countdown: boolean;
   show_rsvp: boolean;
@@ -30,7 +32,8 @@ export interface InvitationSettings {
   show_gift: boolean;
   viral_footer: boolean;
   cover_image?: string | null;
-  couple_image?: string | null;
+  theme_preset?: string; // e.g., 'luxury-gold', 'minimal-clean'
+  animation_preset?: 'fade' | 'slide' | 'parallax' | 'zoom';
 }
 
 export interface InvitationSection {
@@ -39,6 +42,13 @@ export interface InvitationSection {
   enabled: boolean;
   order: number;
   data: Record<string, any>;
+  style?: {
+    background_type: 'color' | 'gradient' | 'image' | 'video';
+    background_value: string;
+    text_color?: string;
+    padding_y?: 'small' | 'medium' | 'large';
+    animation?: 'fade-in' | 'slide-up' | 'zoom-in' | 'none';
+  };
 }
 
 export interface Invitation {

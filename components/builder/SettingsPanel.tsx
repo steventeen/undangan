@@ -2,374 +2,278 @@
 
 import { useBuilderStore } from '@/lib/store';
 import { 
-  Palette, Type, LayoutTemplate, 
-  Settings2, Music, Check, ChevronDown, ChevronUp, GripVertical 
+  Palette, 
+  Layout, 
+  Settings, 
+  Plus, 
+  Image as ImageIcon, 
+  Type, 
+  Zap,
+  CheckCircle2,
+  ChevronRight,
+  Sparkles,
+  MousePointer2
 } from 'lucide-react';
 import { useState } from 'react';
-
-const FONTS = [
-  { value: 'Playfair Display', label: 'Playfair (Serif)' },
-  { value: 'Inter', label: 'Inter (Sans)' },
-  { value: 'Lora', label: 'Lora (Serif)' },
-  { value: 'Montserrat', label: 'Montserrat (Sans)' },
-];
-
-const COLORS = [
-  { value: '#b76e79', label: 'Rose Gold', class: 'bg-[#b76e79]' },
-  { value: '#d4af37', label: 'Gold', class: 'bg-[#d4af37]' },
-  { value: '#5a6b4e', label: 'Sage Green', class: 'bg-[#5a6b4e]' },
-  { value: '#1a365d', label: 'Navy Blue', class: 'bg-[#1a365d]' },
-  { value: '#2d3748', label: 'Charcoal', class: 'bg-[#2d3748]' },
-];
+import { stylePacks } from '@/lib/style-packs';
 
 export default function SettingsPanel() {
-  const { invitation, updateSettings, updateSection, toggleSection, activeSection, setActiveSection, reorderSections } = useBuilderStore();
-  const [activeTab, setActiveTab] = useState<'content' | 'design' | 'settings'>('content');
+  const { invitation, activeSection, updateSection, updateSettings, toggleSection } = useBuilderStore();
+  const [activeTab, setActiveTab] = useState<'blocks' | 'styles' | 'settings'>('styles');
 
   if (!invitation) return null;
 
+  const currentSection = invitation.sections.find(s => s.id === activeSection);
+
+  const applyStylePack = (packId: string) => {
+    const pack = stylePacks.find(p => p.id === packId);
+    if (!pack) return;
+
+    updateSettings({
+      theme_preset: pack.id,
+      primary_color: pack.theme.primary,
+      accent_color: pack.theme.accent,
+      font_heading: pack.theme.font_heading,
+      font_body: pack.theme.font_body,
+      animation_preset: pack.animation
+    });
+  };
+
   return (
-    <div className="flex flex-col h-full bg-white">
-      {/* Tabs */}
-      <div className="flex border-b border-gray-100 p-2 gap-1 bg-white sticky top-0 z-10">
+    <div className="w-full h-full bg-white flex flex-col">
+      {/* Tab Navigation */}
+      <div className="flex border-b border-gray-100 p-2 gap-1 bg-gray-50/50">
         {[
-          { id: 'content', icon: LayoutTemplate, label: 'Konten' },
-          { id: 'design', icon: Palette, label: 'Desain' },
-          { id: 'settings', icon: Settings2, label: 'Pengaturan' }
-        ].map(tab => (
+          { id: 'styles', icon: Palette, label: 'Design' },
+          { id: 'blocks', icon: Plus, label: 'Blocks' },
+          { id: 'settings', icon: Settings, label: 'Editor' },
+        ].map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
-            className={`flex-1 py-2.5 px-2 text-xs font-medium rounded-lg flex flex-col items-center gap-1.5 transition-all ${
+            className={`flex-1 flex flex-col items-center py-2 rounded-xl transition-all ${
               activeTab === tab.id 
-                ? 'bg-rose-50 text-rose-600 shadow-sm border border-rose-100/50' 
-                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+                ? 'bg-white shadow-sm text-rose-500 font-bold scale-[1.02]' 
+                : 'text-gray-400 hover:text-gray-600'
             }`}
           >
-            <tab.icon size={16} />
-            {tab.label}
+            <tab.icon size={18} className="mb-1" />
+            <span className="text-[10px] uppercase tracking-wider">{tab.label}</span>
           </button>
         ))}
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-6">
-        {/* === CONTENT TAB === */}
-        {activeTab === 'content' && (
-          <div className="space-y-3">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 px-1">Urutan Bagian</h3>
-            
-            {invitation.sections.sort((a,b) => a.order - b.order).map((section, index) => {
-              const isExpanded = activeSection === section.id;
-              
-              return (
-                <div key={section.id} className={`border rounded-xl bg-white overflow-hidden transition-all duration-200 ${isExpanded ? 'border-rose-200 ring-4 ring-rose-50' : 'border-gray-200 hover:border-gray-300'}`}>
-                  {/* Section Header */}
-                  <div className="flex items-center p-3 gap-3">
-                    <button className="text-gray-400 hover:text-gray-600 cursor-grab active:cursor-grabbing">
-                      <GripVertical size={16} />
-                    </button>
-                    
-                    <div 
-                      className="flex-1 font-medium text-sm text-gray-700 cursor-pointer flex items-center justify-between"
-                      onClick={() => setActiveSection(isExpanded ? null : section.id)}
-                    >
-                      <span className="capitalize">{section.type}</span>
-                      {isExpanded ? <ChevronUp size={16} className="text-gray-400" /> : <ChevronDown size={16} className="text-gray-400" />}
-                    </div>
-                    
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input 
-                        type="checkbox" 
-                        className="sr-only peer"
-                        checked={section.enabled}
-                        onChange={(e) => toggleSection(section.id, e.target.checked)}
-                      />
-                      <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-rose-500"></div>
-                    </label>
-                  </div>
-                  
-                  {/* Section Content Editor (Dynamic based on type) */}
-                  {isExpanded && section.enabled && (
-                    <div className="p-4 border-t border-gray-100 bg-gray-50/50 space-y-4">
-                      {section.type === 'cover' && (
-                        <>
-                          <div>
-                            <label className="label text-xs">Judul Utama</label>
-                            <input 
-                              type="text" 
-                              className="input py-2 text-sm" 
-                              value={section.data.headline || ''} 
-                              onChange={(e) => updateSection(section.id, { headline: e.target.value })}
-                              placeholder="Budi & Sari"
-                            />
-                          </div>
-                          <div>
-                            <label className="label text-xs">Sub-judul / Tagline</label>
-                            <input 
-                              type="text" 
-                              className="input py-2 text-sm" 
-                              value={section.data.subtitle || ''} 
-                              onChange={(e) => updateSection(section.id, { subtitle: e.target.value })}
-                              placeholder="We are getting married"
-                            />
-                          </div>
-                        </>
-                      )}
-
-                      {section.type === 'couple' && (
-                        <div className="space-y-4">
-                          <div className="p-3 bg-white rounded-lg border border-gray-100">
-                            <p className="text-[10px] font-bold text-gray-400 uppercase mb-3">Mempelai Pria</p>
-                            <div className="space-y-3">
-                              <input type="text" className="input py-2 text-sm" placeholder="Nama Lengkap Pria" value={section.data.groom_name || ''} onChange={(e) => updateSection(section.id, { groom_name: e.target.value })} />
-                              <input type="text" className="input py-2 text-sm" placeholder="Nama Ayah" value={section.data.groom_father || ''} onChange={(e) => updateSection(section.id, { groom_father: e.target.value })} />
-                              <input type="text" className="input py-2 text-sm" placeholder="Nama Ibu" value={section.data.groom_mother || ''} onChange={(e) => updateSection(section.id, { groom_mother: e.target.value })} />
-                              <input type="text" className="input py-2 text-sm" placeholder="Username Instagram" value={section.data.groom_ig || ''} onChange={(e) => updateSection(section.id, { groom_ig: e.target.value })} />
-                            </div>
-                          </div>
-                          <div className="p-3 bg-white rounded-lg border border-gray-100">
-                            <p className="text-[10px] font-bold text-gray-400 uppercase mb-3">Mempelai Wanita</p>
-                            <div className="space-y-3">
-                              <input type="text" className="input py-2 text-sm" placeholder="Nama Lengkap Wanita" value={section.data.bride_name || ''} onChange={(e) => updateSection(section.id, { bride_name: e.target.value })} />
-                              <input type="text" className="input py-2 text-sm" placeholder="Nama Ayah" value={section.data.bride_father || ''} onChange={(e) => updateSection(section.id, { bride_father: e.target.value })} />
-                              <input type="text" className="input py-2 text-sm" placeholder="Nama Ibu" value={section.data.bride_mother || ''} onChange={(e) => updateSection(section.id, { bride_mother: e.target.value })} />
-                              <input type="text" className="input py-2 text-sm" placeholder="Username Instagram" value={section.data.bride_ig || ''} onChange={(e) => updateSection(section.id, { bride_ig: e.target.value })} />
-                            </div>
-                          </div>
-                        </div>
-                      )}
-                      
-                      {section.type === 'event' && (
-                        <div className="space-y-4">
-                          <div>
-                            <label className="label text-xs">Tanggal Acara</label>
-                            <input 
-                              type="date" 
-                              className="input py-2 text-sm" 
-                              value={section.data.date || ''} 
-                              onChange={(e) => updateSection(section.id, { date: e.target.value })}
-                            />
-                          </div>
-                          <div>
-                            <label className="label text-xs">Waktu Acara</label>
-                            <input 
-                              type="text" 
-                              className="input py-2 text-sm" 
-                              value={section.data.time || ''} 
-                              onChange={(e) => updateSection(section.id, { time: e.target.value })}
-                              placeholder="10:00 - Selesai"
-                            />
-                          </div>
-                          <div>
-                            <label className="label text-xs">Lokasi / Nama Gedung</label>
-                            <input 
-                              type="text" 
-                              className="input py-2 text-sm" 
-                              value={section.data.location_name || ''} 
-                              onChange={(e) => updateSection(section.id, { location_name: e.target.value })}
-                              placeholder="Hotel Mulia Senayan"
-                            />
-                          </div>
-                          <div>
-                            <label className="label text-xs">Alamat Lengkap</label>
-                            <textarea 
-                              className="input py-2 text-sm h-20 resize-none" 
-                              value={section.data.address || ''} 
-                              onChange={(e) => updateSection(section.id, { address: e.target.value })}
-                              placeholder="Jl. Asia Afrika, Jakarta Pusat..."
-                            />
-                          </div>
-                          <div>
-                            <label className="label text-xs">URL Google Maps</label>
-                            <input 
-                              type="url" 
-                              className="input py-2 text-sm" 
-                              value={section.data.maps_url || ''} 
-                              onChange={(e) => updateSection(section.id, { maps_url: e.target.value })}
-                              placeholder="https://goo.gl/maps/..."
-                            />
-                          </div>
-                        </div>
-                      )}
-
-                      {section.type === 'story' && (
-                        <div className="space-y-4">
-                          <div>
-                            <label className="label text-xs">Judul Cerita</label>
-                            <input type="text" className="input py-2 text-sm" value={section.data.title || ''} onChange={(e) => updateSection(section.id, { title: e.target.value })} placeholder="Perjalanan Cinta Kami" />
-                          </div>
-                          <div>
-                            <label className="label text-xs">Isi Cerita</label>
-                            <textarea 
-                              className="input py-2 text-sm h-32 resize-none" 
-                              value={section.data.content || ''} 
-                              onChange={(e) => updateSection(section.id, { content: e.target.value })}
-                              placeholder="Ceritakan bagaimana Anda bertemu..."
-                            />
-                          </div>
-                        </div>
-                      )}
-
-                      {section.type === 'gallery' && (
-                        <div className="space-y-3">
-                          <p className="text-xs text-gray-500">Masukkan URL gambar untuk galeri (pisahkan dengan baris baru).</p>
-                          <textarea 
-                            className="input py-2 text-sm h-32 resize-none font-mono" 
-                            value={section.data.images?.join('\n') || ''} 
-                            onChange={(e) => updateSection(section.id, { images: e.target.value.split('\n').filter(i => i.trim()) })}
-                            placeholder="https://example.com/image1.jpg&#10;https://example.com/image2.jpg"
-                          />
-                        </div>
-                      )}
-
-                      {section.type === 'gift' && (
-                        <div className="space-y-4">
-                          <div className="p-3 bg-white rounded-lg border border-gray-100">
-                            <p className="text-[10px] font-bold text-gray-400 uppercase mb-3">Rekening Bank / E-Wallet</p>
-                            <div className="space-y-3">
-                              <input type="text" className="input py-2 text-sm" placeholder="Nama Bank (misal: BCA)" value={section.data.bank_name || ''} onChange={(e) => updateSection(section.id, { bank_name: e.target.value })} />
-                              <input type="text" className="input py-2 text-sm" placeholder="Nomor Rekening" value={section.data.account_number || ''} onChange={(e) => updateSection(section.id, { account_number: e.target.value })} />
-                              <input type="text" className="input py-2 text-sm" placeholder="Atas Nama" value={section.data.account_holder || ''} onChange={(e) => updateSection(section.id, { account_holder: e.target.value })} />
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {section.type === 'closing' && (
-                        <div>
-                          <label className="label text-xs">Pesan Penutup</label>
-                          <textarea 
-                            className="input py-2 text-sm h-24 resize-none" 
-                            value={section.data.content || ''} 
-                            onChange={(e) => updateSection(section.id, { content: e.target.value })}
-                            placeholder="Terima kasih atas doa restu Bapak/Ibu..."
-                          />
-                        </div>
-                      )}
-                      
-                      {section.type === 'rsvp' && (
-                        <p className="text-xs text-gray-500 italic text-center py-2">
-                          RSVP akan muncul secara otomatis di undangan.
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* === DESIGN TAB === */}
-        {activeTab === 'design' && (
-          <div className="space-y-8">
-            <div>
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 px-1 flex items-center gap-2">
-                <Palette size={14} /> Warna Utama
-              </h3>
-              <div className="flex flex-wrap gap-3 px-1">
-                {COLORS.map((color) => (
-                  <button
-                    key={color.value}
-                    onClick={() => updateSettings({ primary_color: color.value })}
-                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-transform hover:scale-110 ${color.class} ${invitation.settings.primary_color === color.value ? 'ring-2 ring-offset-2 ring-gray-900' : ''}`}
-                    title={color.label}
-                  >
-                    {invitation.settings.primary_color === color.value && <Check size={16} className="text-white drop-shadow-md" />}
-                  </button>
-                ))}
-                {/* Custom Color Input */}
-                <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-dashed border-gray-300 flex items-center justify-center hover:border-gray-400 transition-colors">
-                  <input 
-                    type="color" 
-                    value={invitation.settings.primary_color}
-                    onChange={(e) => updateSettings({ primary_color: e.target.value })}
-                    className="absolute inset-[-10px] w-[200%] h-[200%] cursor-pointer opacity-0"
-                  />
-                  <div className="w-6 h-6 rounded-full" style={{ backgroundColor: invitation.settings.primary_color }} />
-                </div>
+      <div className="flex-1 overflow-y-auto no-scrollbar p-6">
+        {/* === DESIGN / STYLE PACKS TAB === */}
+        {activeTab === 'styles' && (
+          <div className="space-y-8 animate-fade-in">
+            <section>
+              <div className="flex items-center gap-2 mb-4">
+                <Sparkles size={16} className="text-amber-500" />
+                <h3 className="text-xs font-bold text-gray-900 uppercase tracking-widest">Style Packs</h3>
               </div>
-            </div>
-
-            <div>
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 px-1 flex items-center gap-2">
-                <Type size={14} /> Tipografi
-              </h3>
-              <div className="space-y-2 px-1">
-                {FONTS.map((font) => (
+              <div className="grid grid-cols-1 gap-3">
+                {stylePacks.map((pack) => (
                   <button
-                    key={font.value}
-                    onClick={() => updateSettings({ font: font.value })}
-                    className={`w-full p-3 border rounded-xl text-left transition-all ${
-                      invitation.settings.font === font.value 
-                        ? 'border-rose-500 bg-rose-50/50 ring-1 ring-rose-500/20' 
-                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                    key={pack.id}
+                    onClick={() => applyStylePack(pack.id)}
+                    className={`group relative p-4 rounded-2xl border-2 text-left transition-all hover:shadow-lg ${
+                      invitation.settings.theme_preset === pack.id 
+                        ? 'border-rose-500 bg-rose-50/30' 
+                        : 'border-gray-100 hover:border-rose-200'
                     }`}
                   >
-                    <span style={{ fontFamily: font.value }} className="text-lg text-gray-900">{font.label}</span>
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="w-10 h-10 rounded-xl bg-white shadow-sm border border-gray-100 flex items-center justify-center text-xl">
+                        {pack.thumbnail}
+                      </div>
+                      {invitation.settings.theme_preset === pack.id && (
+                        <CheckCircle2 size={18} className="text-rose-500 fill-white" />
+                      )}
+                    </div>
+                    <h4 className="font-bold text-gray-900 text-sm">{pack.name}</h4>
+                    <p className="text-[10px] text-gray-400 mt-1 line-clamp-2">{pack.description}</p>
+                    
+                    <div className="flex gap-1.5 mt-4">
+                      {[pack.theme.primary, pack.theme.accent, pack.theme.background].map((color, i) => (
+                        <div key={i} className="w-4 h-1.5 rounded-full" style={{ backgroundColor: color }} />
+                      ))}
+                    </div>
                   </button>
                 ))}
               </div>
-            </div>
-          </div>
-        )}
+            </section>
 
-        {/* === SETTINGS TAB === */}
-        {activeTab === 'settings' && (
-          <div className="space-y-6">
-            <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-4">
-              <h3 className="font-medium text-gray-900 flex items-center gap-2 mb-2">
-                <Music size={16} className="text-rose-500" /> Musik Latar
-              </h3>
-              
-              <div>
-                <label className="label text-xs">URL Musik (MP3)</label>
-                <input 
-                  type="url" 
-                  className="input py-2 text-sm" 
-                  value={invitation.settings.music_url || ''} 
-                  onChange={(e) => updateSettings({ music_url: e.target.value })}
-                  placeholder="https://contoh.com/lagu.mp3"
-                />
-                <p className="text-[11px] text-gray-400 mt-1">Kosongkan jika tidak menggunakan musik.</p>
+            <section>
+              <h3 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-4">Typography</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="label text-[10px]">Heading Font</label>
+                  <select 
+                    className="input py-2 text-xs"
+                    value={invitation.settings.font_heading}
+                    onChange={(e) => updateSettings({ font_heading: e.target.value })}
+                  >
+                    <option value="Playfair Display">Playfair Display</option>
+                    <option value="Inter">Inter</option>
+                    <option value="Lora">Lora</option>
+                    <option value="Cinzel">Cinzel</option>
+                  </select>
+                </div>
               </div>
+            </section>
+          </div>
+        )}
 
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  className="w-4 h-4 text-rose-500 rounded border-gray-300 focus:ring-rose-500"
-                  checked={invitation.settings.music_autoplay}
-                  onChange={(e) => updateSettings({ music_autoplay: e.target.checked })}
-                />
-                <span className="text-sm text-gray-700">Putar otomatis (Autoplay)</span>
-              </label>
-            </div>
-
-            <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-4">
-              <h3 className="font-medium text-gray-900 mb-2">Preferensi Umum</h3>
-              
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  className="w-4 h-4 text-rose-500 rounded border-gray-300 focus:ring-rose-500"
-                  checked={invitation.settings.show_countdown}
-                  onChange={(e) => updateSettings({ show_countdown: e.target.checked })}
-                />
-                <span className="text-sm text-gray-700">Tampilkan Hitung Mundur</span>
-              </label>
-              
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  className="w-4 h-4 text-rose-500 rounded border-gray-300 focus:ring-rose-500"
-                  checked={invitation.settings.viral_footer}
-                  onChange={(e) => updateSettings({ viral_footer: e.target.checked })}
-                />
-                <span className="text-sm text-gray-700">Tampilkan Footer "Buat Undangan"</span>
-              </label>
+        {/* === BLOCKS TAB === */}
+        {activeTab === 'blocks' && (
+          <div className="space-y-6 animate-fade-in">
+            <h3 className="text-xs font-bold text-gray-900 uppercase tracking-widest mb-4">Available Blocks</h3>
+            <div className="grid grid-cols-2 gap-3">
+              {invitation.sections.map((section) => (
+                <button
+                  key={section.id}
+                  onClick={() => toggleSection(section.id, !section.enabled)}
+                  className={`p-4 rounded-2xl border-2 text-center transition-all ${
+                    section.enabled 
+                      ? 'border-rose-500 bg-rose-50/30' 
+                      : 'border-gray-100 opacity-50 grayscale hover:grayscale-0 hover:border-rose-200'
+                  }`}
+                >
+                  <div className="w-8 h-8 mx-auto mb-2 bg-white rounded-lg shadow-sm border border-gray-100 flex items-center justify-center text-gray-400 group-hover:text-rose-500">
+                    <Plus size={16} />
+                  </div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider">{section.type}</span>
+                </button>
+              ))}
             </div>
           </div>
         )}
+
+        {/* === EDITOR / SETTINGS TAB === */}
+        {activeTab === 'settings' && (
+          <div className="animate-fade-in">
+            {!currentSection ? (
+              <div className="py-20 text-center space-y-4">
+                <div className="w-16 h-16 bg-gray-50 rounded-full mx-auto flex items-center justify-center text-gray-300">
+                  <MousePointer2 size={32} />
+                </div>
+                <p className="text-sm text-gray-400 font-medium">Klik elemen di canvas <br/> untuk mengedit.</p>
+              </div>
+            ) : (
+              <div className="space-y-8">
+                <div className="flex items-center justify-between pb-4 border-b border-gray-100">
+                  <div>
+                    <h3 className="font-bold text-gray-900 capitalize">{currentSection.type}</h3>
+                    <p className="text-[10px] text-gray-400 uppercase tracking-widest mt-1">Section Editor</p>
+                  </div>
+                </div>
+
+                <section className="space-y-4">
+                  <div className="flex items-center gap-2 text-rose-500">
+                    <Type size={16} />
+                    <h4 className="text-[10px] font-bold uppercase tracking-wider">Content</h4>
+                  </div>
+                  
+                  {/* Dynamic Content Inputs */}
+                  {currentSection.type === 'cover' && (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="label text-[10px]">Headline</label>
+                        <input 
+                          type="text" 
+                          className="input" 
+                          value={currentSection.data.headline || ''} 
+                          onChange={(e) => updateSection(currentSection.id, { headline: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <label className="label text-[10px]">Subtitle</label>
+                        <textarea 
+                          className="input h-20 resize-none" 
+                          value={currentSection.data.subtitle || ''} 
+                          onChange={(e) => updateSection(currentSection.id, { subtitle: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {currentSection.type === 'couple' && (
+                     <div className="space-y-4">
+                        <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                          <p className="text-[9px] font-bold text-gray-400 uppercase mb-3">Mempelai Pria</p>
+                          <input 
+                            type="text" 
+                            className="input mb-3" 
+                            placeholder="Nama Pria"
+                            value={currentSection.data.groom_name || ''} 
+                            onChange={(e) => updateSection(currentSection.id, { groom_name: e.target.value })}
+                          />
+                        </div>
+                        <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                          <p className="text-[9px] font-bold text-gray-400 uppercase mb-3">Mempelai Wanita</p>
+                          <input 
+                            type="text" 
+                            className="input" 
+                            placeholder="Nama Wanita"
+                            value={currentSection.data.bride_name || ''} 
+                            onChange={(e) => updateSection(currentSection.id, { bride_name: e.target.value })}
+                          />
+                        </div>
+                     </div>
+                  )}
+                </section>
+
+                <section className="space-y-4">
+                  <div className="flex items-center gap-2 text-rose-500">
+                    <Palette size={16} />
+                    <h4 className="text-[10px] font-bold uppercase tracking-wider">Visual & Layout</h4>
+                  </div>
+                  
+                  <div>
+                    <label className="label text-[10px]">Background</label>
+                    <div className="flex bg-gray-100 p-1 rounded-xl gap-1">
+                      {['color', 'image', 'gradient'].map((t) => (
+                        <button 
+                          key={t}
+                          onClick={() => updateSection(currentSection.id, {}, { background_type: t })}
+                          className={`flex-1 py-1.5 rounded-lg text-[9px] font-bold uppercase transition-all ${
+                            currentSection.style?.background_type === t ? 'bg-white shadow-sm text-gray-900' : 'text-gray-400'
+                          }`}
+                        >
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="label text-[10px]">Animation</label>
+                    <select 
+                      className="input py-2 text-xs"
+                      value={currentSection.style?.animation || 'none'}
+                      onChange={(e) => updateSection(currentSection.id, {}, { animation: e.target.value })}
+                    >
+                      <option value="none">None</option>
+                      <option value="fade-in">Fade In</option>
+                      <option value="slide-up">Slide Up</option>
+                      <option value="zoom-in">Zoom In</option>
+                    </select>
+                  </div>
+                </section>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Footer Status */}
+      <div className="p-4 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+          <span className="text-[10px] font-medium text-gray-500 uppercase tracking-widest">Live Syncing</span>
+        </div>
+        <span className="text-[10px] text-gray-300 font-mono">v2.0-canva</span>
       </div>
     </div>
   );

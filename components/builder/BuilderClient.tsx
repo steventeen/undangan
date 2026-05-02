@@ -4,8 +4,8 @@ import { useEffect } from 'react';
 import { useBuilderStore } from '@/lib/store';
 import { supabase } from '@/lib/supabase.client';
 import SettingsPanel from './SettingsPanel';
-import PreviewPanel from './PreviewPanel';
-import { Loader2, Save, ArrowLeft, ExternalLink } from 'lucide-react';
+import VisualCanvas from './VisualCanvas';
+import { Loader2, Save, ArrowLeft, ExternalLink, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import type { Invitation } from '@/types';
 import { useRouter } from 'next/navigation';
@@ -61,23 +61,27 @@ export default function BuilderClient({ initialData }: { initialData: Invitation
       </div>
 
       {/* Desktop Sidebar (Settings Panel) */}
-      <div className="w-full md:w-80 lg:w-96 bg-white border-r border-gray-200 flex flex-col h-[calc(100vh-60px)] md:h-screen shrink-0 relative z-10 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
-        <div className="hidden md:flex items-center justify-between p-4 border-b border-gray-100 bg-gray-50/50">
-          <Link href="/dashboard/invitations" className="flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-rose-600 transition-colors">
-            <ArrowLeft size={16} /> Kembali
+      <div className="w-full md:w-80 lg:w-[400px] bg-white border-r border-gray-200 flex flex-col h-[calc(100vh-60px)] md:h-screen shrink-0 relative z-20 shadow-[10px_0_40px_rgba(0,0,0,0.03)]">
+        <div className="hidden md:flex items-center justify-between p-4 border-b border-gray-100 bg-white">
+          <Link href="/dashboard/invitations" className="flex items-center gap-2 text-sm font-bold text-gray-400 hover:text-rose-500 transition-colors uppercase tracking-widest">
+            <ArrowLeft size={16} /> Dashboard
           </Link>
           <div className="flex items-center gap-2">
             {invitation.is_published && (
-              <Link href={`/i/${invitation.slug}`} target="_blank" className="btn btn-ghost btn-sm text-gray-500 hover:text-rose-600 px-2">
-                <ExternalLink size={16} />
+              <Link href={`/i/${invitation.slug}`} target="_blank" className="p-2 text-gray-400 hover:text-rose-500 transition-colors">
+                <ExternalLink size={18} />
               </Link>
             )}
             <button 
               onClick={handleSave} 
               disabled={!hasChanges || isSaving}
-              className={`btn btn-sm ${hasChanges ? 'btn-primary shadow-rose-200/50' : 'bg-gray-100 text-gray-400'}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                hasChanges 
+                  ? 'bg-rose-500 text-white shadow-lg shadow-rose-200 hover:-translate-y-0.5' 
+                  : 'bg-gray-100 text-gray-300 cursor-not-allowed'
+              }`}
             >
-              {isSaving ? <Loader2 size={14} className="animate-spin" /> : <><Save size={14} /> Simpan</>}
+              {isSaving ? <Loader2 size={14} className="animate-spin" /> : <><Save size={14} /> Save</>}
             </button>
           </div>
         </div>
@@ -87,12 +91,9 @@ export default function BuilderClient({ initialData }: { initialData: Invitation
         </div>
       </div>
 
-      {/* Preview Area */}
-      <div className="hidden md:flex flex-1 bg-gray-100/80 items-center justify-center p-4 lg:p-8 relative overflow-hidden">
-        {/* Background decorative pattern */}
-        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
-        
-        <PreviewPanel />
+      {/* Preview Area (Visual Canvas) */}
+      <div className="hidden md:flex flex-1 h-screen overflow-hidden">
+        <VisualCanvas />
       </div>
     </>
   );
